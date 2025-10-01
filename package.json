@@ -1,0 +1,24 @@
+{
+  "name": "cse-341-node-project3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivanmakarov7ch/-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ivanmakarov7ch/-/issues"
+  },
+  "homepage": "https://github.com/ivanmakarov7ch/-#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
