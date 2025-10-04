@@ -5,7 +5,7 @@ info:
   description: API for managing cakes and users
 
 servers:
-  - url: https://your-render-app.onrender.com/api
+  - url: https://cse-341-node-project3.onrender.com
 
 paths:
   /cakes:

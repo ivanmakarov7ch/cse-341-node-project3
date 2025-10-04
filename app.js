@@ -28,3 +28,9 @@ mongoose.connect(process.env.MONGO_URI)
     });
   })
   .catch(err => console.error(err));
+
+// app.get('/', (req, res) => {
+//   res.send('<h1>Welcome to the CSE341 Project 3 API</h1><p>Use /api-docs for Swagger documentation.</p>');
+// });
+
+app.use(express.static('public'));
