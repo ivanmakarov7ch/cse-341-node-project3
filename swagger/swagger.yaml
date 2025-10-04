@@ -69,9 +69,6 @@ paths:
         '200':
           description: Cake deleted
 
-
-Users Operations about users
-
   /api/users:
     get:
       summary: Get all users
