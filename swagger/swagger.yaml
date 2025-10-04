@@ -8,7 +8,7 @@ servers:
   - url: https://cse-341-node-project3.onrender.com
 
 paths:
-  /cakes:
+  /api/cakes:
     get:
       summary: Get all cakes
       responses:
@@ -16,12 +16,19 @@ paths:
           description: List of cakes
     post:
       summary: Create a new cake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cake'
       responses:
         '201':
           description: Cake created
-  /cakes/{id}:
+
+  /api/cakes/{id}:
     get:
-      summary: Get a single cake
+      summary: Get a single cake by ID
       parameters:
         - in: path
           name: id
@@ -34,18 +41,24 @@ paths:
         '404':
           description: Not found
     put:
-      summary: Update a cake
+      summary: Update a cake by ID
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cake'
       responses:
         '200':
           description: Cake updated
     delete:
-      summary: Delete a cake
+      summary: Delete a cake by ID
       parameters:
         - in: path
           name: id
@@ -56,7 +69,7 @@ paths:
         '200':
           description: Cake deleted
 
-  /users:
+  /api/users:
     get:
       summary: Get all users
       responses:
@@ -64,12 +77,19 @@ paths:
           description: List of users
     post:
       summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '201':
           description: User created
-  /users/{id}:
+
+  /api/users/{id}:
     get:
-      summary: Get a single user
+      summary: Get a single user by ID
       parameters:
         - in: path
           name: id
@@ -82,18 +102,24 @@ paths:
         '404':
           description: Not found
     put:
-      summary: Update a user
+      summary: Update a user by ID
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: User updated
     delete:
-      summary: Delete a user
+      summary: Delete a user by ID
       parameters:
         - in: path
           name: id
@@ -103,3 +129,33 @@ paths:
       responses:
         '200':
           description: User deleted
+
+components:
+  schemas:
+    Cake:
+      type: object
+      properties:
+        name:
+          type: string
+        flavor:
+          type: string
+        price:
+          type: number
+      required:
+        - name
+        - flavor
+        - price
+
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
