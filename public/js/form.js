@@ -2,12 +2,13 @@ document.getElementById('cakeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name = document.getElementById('name').value;
+  const flavor = document.getElementById('flavor').value;
   const description = document.getElementById('description').value;
   const price = parseFloat(document.getElementById('price').value);
   const category = document.getElementById('category').value;
   const message = document.getElementById('message');
 
-  const cake = { name, description, price, category };
+  const cake = { name, flavor, description, price, category };
 
   try {
     const response = await fetch('/api/cakes', {
