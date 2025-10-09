@@ -23,19 +23,26 @@ passport.use(
         }
 
         // If still not found, create new user
-        if (!user) {
-          user = await User.create({
-            githubId: profile.id,
-            username: profile.username,
-            email: profile.emails?.[0]?.value || `${profile.username}@github.com`
-          });
-        } else {
-          // If user exists but githubId is missing, update it
-          if (!user.githubId) {
-            user.githubId = profile.id;
-            await user.save();
-          }
-        }
+if (!user) {
+  // If username already exists, append a number to make it unique
+  let newUsername = profile.username;
+  let counter = 1;
+  while (await User.findOne({ username: newUsername })) {
+    newUsername = `${profile.username}${counter}`;
+    counter++;
+  }
+
+  user = await User.create({
+    githubId: profile.id,
+    username: newUsername,
+    email: profile.emails?.[0]?.value || `${newUsername}@github.com`
+  });
+} else {
+  if (!user.githubId) {
+    user.githubId = profile.id;
+    await user.save();
+  }
+}
 
         return done(null, user);
       } catch (err) {
