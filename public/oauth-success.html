@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Success</title>
+</head>
+<body>
+  <h1>Login Successful!</h1>
+  <p>Your token:</p>
+  <pre id="token"></pre>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    document.getElementById('token').textContent = token || 'No token found';
+  </script>
+</body>
+</html>
