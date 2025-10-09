@@ -16,3 +16,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.innerHTML = `<p class="error">Error loading cakes: ${err.message}</p>`;
   }
 });
+
+async function updateAuthUI() {
+  const authSection = document.getElementById('auth-section');
+  try {
+    const res = await fetch('/api/me');
+    if (res.ok) {
+      const user = await res.json();
+      authSection.innerHTML = `
+        Hello, ${user.name} | <a href="/logout">Logout</a>
+      `;
+    } else {
+      authSection.innerHTML = `
+        <a href="/auth/google" class="google-login-btn">Login with Google</a>
+      `;
+    }
+  } catch (error) {
+    authSection.innerHTML = `
+      <a href="/auth/google" class="google-login-btn">Login with Google</a>
+    `;
+  }
+}
+
+// Call on page load
+updateAuthUI();

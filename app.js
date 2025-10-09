@@ -8,6 +8,15 @@ const passport = require('passport'); // ✅ add this line FIRST
 
 const app = express(); // ✅ define app BEFORE using it
 
+// Get current user
+app.get('/api/me', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.json({ name: req.user.name, email: req.user.email });
+  } 
+  res.status(401).json({ message: 'Not logged in' });
+});
+
+
 // Middleware
 app.use(express.json());
 app.use(cors());
