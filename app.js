@@ -4,46 +4,46 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const passport = require('passport'); // ✅ add this line FIRST
 
+const app = express(); // ✅ define app BEFORE using it
 
-
-require('./config/passport')(passport);
-app.use(passport.initialize());
-const authRoutes = require('./routes/authRoutes');
-app.use('/auth', authRoutes);
-
-
-
-const app = express();
+// Middleware
 app.use(express.json());
 app.use(cors());
+
+// Passport setup
+require('./config/passport')(passport); // ✅ now passport is defined
+app.use(passport.initialize());
 
 // Swagger setup
 const swaggerDocument = YAML.load('./swagger/swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes
+const authRoutes = require('./routes/authRoutes');
 const cakeRoutes = require('./routes/cakeRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+
+app.use('/auth', authRoutes);
 app.use('/api/cakes', cakeRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+// Static files (optional for front-end)
+app.use(express.static('public'));
+
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('MongoDB connected');
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(`Server running on port ${process.env.PORT || 3000}`);
+    console.log('✅ MongoDB connected');
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`🚀 Server running on port ${port}`);
     });
   })
-  .catch(err => console.error(err));
-
-// app.get('/', (req, res) => {
-//   res.send('<h1>Welcome to the CSE341 Project 3 API</h1><p>Use /api-docs for Swagger documentation.</p>');
-// });
-
-app.use(express.static('public'));
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
