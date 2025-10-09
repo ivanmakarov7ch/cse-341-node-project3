@@ -10,7 +10,7 @@ module.exports = function(passport) {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL || '/auth/github/callback'
+        callbackURL: process.env.GITHUB_CALLBACK_URL || 'https://cse-341-node-project3.onrender.com/auth/github/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
