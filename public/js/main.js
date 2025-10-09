@@ -19,23 +19,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function updateAuthUI() {
   const authSection = document.getElementById('auth-section');
-  try {
-    const res = await fetch('/api/me');
-    if (res.ok) {
-      const user = await res.json();
-      authSection.innerHTML = `
-        Hello, ${user.name} | <a href="/logout">Logout</a>
-      `;
-    } else {
-      authSection.innerHTML = `
-        <a href="/auth/google" class="google-login-btn">Login with Google</a>
-      `;
-    }
-  } catch (error) {
+  const token = localStorage.getItem('jwtToken');
+  const username = localStorage.getItem('username');
+
+  if (token && username) {
+    authSection.innerHTML = `
+      Hello, ${username} | <button id="logout-btn">Logout</button>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('jwtToken');
+      localStorage.removeItem('username');
+      updateAuthUI();
+    });
+  } else {
     authSection.innerHTML = `
       <a href="/auth/google" class="google-login-btn">Login with Google</a>
     `;
   }
+}
+
+// Optional helper to fetch protected endpoints with token
+async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('jwtToken');
+  options.headers = {
+    ...options.headers,
+    Authorization: token ? `Bearer ${token}` : '',
+    'Content-Type': 'application/json'
+  };
+  return fetch(url, options);
 }
 
 // Call on page load
