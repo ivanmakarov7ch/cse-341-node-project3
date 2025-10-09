@@ -8,6 +8,7 @@ async function loadCakes() {
   const container = document.getElementById('cakes-container');
   try {
     const res = await fetch('/api/cakes');
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const cakes = await res.json();
 
     container.innerHTML = cakes.map(cake => `
@@ -36,8 +37,12 @@ async function updateAuthUI() {
       `;
 
       document.getElementById('logout-btn').addEventListener('click', async () => {
-        await fetch('/auth/logout');
-        updateAuthUI(); // refresh UI
+        const logoutRes = await fetch('/auth/logout');
+        if (logoutRes.ok) {
+          await updateAuthUI(); // refresh UI after logout
+        } else {
+          alert('Logout failed');
+        }
       });
     } else {
       authSection.innerHTML = `
