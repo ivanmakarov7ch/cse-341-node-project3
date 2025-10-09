@@ -9,9 +9,9 @@
   <pre id="token"></pre>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    document.getElementById('token').textContent = token || 'No token found';
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    document.getElementById('token').textContent = token;
   </script>
 </body>
 </html>

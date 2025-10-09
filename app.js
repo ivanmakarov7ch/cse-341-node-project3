@@ -2,32 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const passport = require('passport'); // ✅ add this line FIRST
 
-const app = express(); // ✅ define app BEFORE using it
-
-// Get current user
-app.get('/api/me', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.json({ name: req.user.name, email: req.user.email });
-  } 
-  res.status(401).json({ message: 'Not logged in' });
-});
-
-
-// Middleware
+const app = express();
 app.use(express.json());
 app.use(cors());
-
-// Passport setup
-require('./config/passport')(passport); // ✅ now passport is defined
 app.use(passport.initialize());
 
-// Swagger setup
-const swaggerDocument = YAML.load('./swagger/swagger.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Passport config
+require('./config/passport')();
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -42,17 +27,18 @@ app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 
-// Static files (optional for front-end)
-app.use(express.static('public'));
+// Swagger
+const swaggerDocument = YAML.load('./swagger/swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// MongoDB Connection
+// MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('✅ MongoDB connected');
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
-    });
+    console.log('MongoDB connected');
+    app.listen(process.env.PORT || 3000, () => console.log(`Server running on port ${process.env.PORT || 3000}`));
   })
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+  .catch(err => console.error(err));
+
+// Serve static files (for oauth-success.html)
+app.use(express.static('public'));
