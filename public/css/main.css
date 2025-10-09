@@ -92,3 +92,17 @@ footer {
   text-decoration: underline;
   margin-left: 0.5em;
 }
+
+.github-login-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #24292e;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.github-login-btn:hover {
+  background-color: #444c56;
+}

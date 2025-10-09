@@ -1,31 +1,27 @@
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const passport = require('passport');
+const GitHubStrategy = require('passport-github2').Strategy;
 const User = require('../models/user');
 
-module.exports = () => {
+module.exports = (passport) => {
   passport.use(
-    new GoogleStrategy(
+    new GitHubStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: `${process.env.BASE_URL}/auth/github/callback`
       },
       async (accessToken, refreshToken, profile, done) => {
-        try {
-          // Check if user already exists
-          let user = await User.findOne({ googleId: profile.id });
-          if (!user) {
-            user = await User.create({
-              googleId: profile.id,
-              username: profile.displayName,
-              email: profile.emails[0].value,
-            });
-          }
-          return done(null, user);
-        } catch (err) {
-          return done(err, null);
+        let user = await User.findOne({ githubId: profile.id });
+        if (!user) {
+          user = new User({ username: profile.username, githubId: profile.id });
+          await user.save();
         }
+        return done(null, user);
       }
     )
   );
+
+  passport.serializeUser((user, done) => done(null, user.id));
+  passport.deserializeUser((id, done) => {
+    User.findById(id, (err, user) => done(err, user));
+  });
 };

@@ -5,14 +5,27 @@ const cors = require('cors');
 const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const session = require('express-session');
+
+// Session
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'supersecret',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI })
+  })
+);
+
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
-
-// Passport config
-require('./config/passport')();
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
