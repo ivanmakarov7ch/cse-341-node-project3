@@ -2,20 +2,30 @@ openapi: 3.0.0
 info:
   title: Cake Ordering API
   version: 1.0.0
-  description: API for managing cakes and users
-
+  description: |
+    # 🍰 Cake Ordering API
+    This API allows you to manage **Users**, **Cakes**, and **Reviews**.
+    - Users can register, login, and update their info.
+    - Cakes can be created, updated, deleted, and listed.
+    - Reviews can be created for cakes by authenticated users.
 servers:
   - url: https://cse-341-node-project3.onrender.com
+  - url: http://localhost:3000
 
 paths:
+  # ===== Cakes =====
   /api/cakes:
     get:
       summary: Get all cakes
+      tags:
+        - Cakes
       responses:
         '200':
           description: List of cakes
     post:
       summary: Create a new cake
+      tags:
+        - Cakes
       requestBody:
         required: true
         content:
@@ -29,6 +39,8 @@ paths:
   /api/cakes/{id}:
     get:
       summary: Get a single cake by ID
+      tags:
+        - Cakes
       parameters:
         - in: path
           name: id
@@ -39,9 +51,11 @@ paths:
         '200':
           description: Cake found
         '404':
-          description: Not found
+          description: Cake not found
     put:
       summary: Update a cake by ID
+      tags:
+        - Cakes
       parameters:
         - in: path
           name: id
@@ -59,6 +73,8 @@ paths:
           description: Cake updated
     delete:
       summary: Delete a cake by ID
+      tags:
+        - Cakes
       parameters:
         - in: path
           name: id
@@ -69,14 +85,19 @@ paths:
         '200':
           description: Cake deleted
 
+  # ===== Users =====
   /api/users:
     get:
       summary: Get all users
+      tags:
+        - Users
       responses:
         '200':
           description: List of users
     post:
       summary: Create a new user
+      tags:
+        - Users
       requestBody:
         required: true
         content:
@@ -90,6 +111,8 @@ paths:
   /api/users/{id}:
     get:
       summary: Get a single user by ID
+      tags:
+        - Users
       parameters:
         - in: path
           name: id
@@ -100,9 +123,11 @@ paths:
         '200':
           description: User found
         '404':
-          description: Not found
+          description: User not found
     put:
       summary: Update a user by ID
+      tags:
+        - Users
       parameters:
         - in: path
           name: id
@@ -120,6 +145,8 @@ paths:
           description: User updated
     delete:
       summary: Delete a user by ID
+      tags:
+        - Users
       parameters:
         - in: path
           name: id
@@ -130,6 +157,78 @@ paths:
         '200':
           description: User deleted
 
+  # ===== Reviews =====
+  /api/reviews:
+    get:
+      summary: Get all reviews
+      tags:
+        - Reviews
+      responses:
+        '200':
+          description: List of reviews
+    post:
+      summary: Create a new review
+      tags:
+        - Reviews
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '201':
+          description: Review created
+
+  /api/reviews/{id}:
+    get:
+      summary: Get a single review by ID
+      tags:
+        - Reviews
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Review found
+        '404':
+          description: Review not found
+    put:
+      summary: Update a review by ID
+      tags:
+        - Reviews
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '200':
+          description: Review updated
+    delete:
+      summary: Delete a review by ID
+      tags:
+        - Reviews
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Review deleted
+
 components:
   schemas:
     Cake:
@@ -139,8 +238,12 @@ components:
           type: string
         flavor:
           type: string
+        description:
+          type: string
         price:
           type: number
+        available:
+          type: boolean
       required:
         - name
         - flavor
@@ -159,3 +262,23 @@ components:
         - username
         - email
         - password
+
+    Review:
+      type: object
+      properties:
+        user:
+          type: string
+          description: Mongo ID of user
+        cake:
+          type: string
+          description: Mongo ID of cake
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+      required:
+        - user
+        - cake
+        - rating
