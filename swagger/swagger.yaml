@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
   title: Cake Ordering API
-  version: 1.0.0
+  version: 1.1.0
   description: |
     # 🍰 Cake Ordering API
     This API allows you to manage **Users**, **Cakes**, and **Reviews**.
-    - Users can register, login, and update their info.
-    - Cakes can be created, updated, deleted, and listed.
+    - Users can log in via GitHub OAuth and update their info.
+    - Cakes can be created, updated, deleted, and listed by authenticated users.
     - Reviews can be created for cakes by authenticated users.
 servers:
   - url: https://cse-341-node-project3.onrender.com
@@ -23,9 +23,11 @@ paths:
         '200':
           description: List of cakes
     post:
-      summary: Create a new cake
+      summary: Create a new cake (authenticated)
       tags:
         - Cakes
+      security:
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -35,6 +37,8 @@ paths:
       responses:
         '201':
           description: Cake created
+        '401':
+          description: Unauthorized
 
   /api/cakes/{id}:
     get:
@@ -53,9 +57,11 @@ paths:
         '404':
           description: Cake not found
     put:
-      summary: Update a cake by ID
+      summary: Update a cake by ID (authenticated)
       tags:
         - Cakes
+      security:
+        - sessionAuth: []
       parameters:
         - in: path
           name: id
@@ -71,10 +77,14 @@ paths:
       responses:
         '200':
           description: Cake updated
+        '401':
+          description: Unauthorized
     delete:
-      summary: Delete a cake by ID
+      summary: Delete a cake by ID (authenticated)
       tags:
         - Cakes
+      security:
+        - sessionAuth: []
       parameters:
         - in: path
           name: id
@@ -84,78 +94,38 @@ paths:
       responses:
         '200':
           description: Cake deleted
+        '401':
+          description: Unauthorized
 
   # ===== Users =====
-  /api/users:
+  /auth/github:
     get:
-      summary: Get all users
+      summary: Login via GitHub OAuth
       tags:
         - Users
       responses:
-        '200':
-          description: List of users
-    post:
-      summary: Create a new user
-      tags:
-        - Users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '201':
-          description: User created
+        '302':
+          description: Redirects to GitHub for authentication
 
-  /api/users/{id}:
+  /auth/logout:
     get:
-      summary: Get a single user by ID
+      summary: Logout user
       tags:
         - Users
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
       responses:
         '200':
-          description: User found
-        '404':
-          description: User not found
-    put:
-      summary: Update a user by ID
+          description: User logged out
+
+  /auth/me:
+    get:
+      summary: Get current authenticated user info
       tags:
         - Users
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
       responses:
         '200':
-          description: User updated
-    delete:
-      summary: Delete a user by ID
-      tags:
-        - Users
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User deleted
+          description: Returns the logged-in user
+        '401':
+          description: Not logged in
 
   # ===== Reviews =====
   /api/reviews:
@@ -167,9 +137,11 @@ paths:
         '200':
           description: List of reviews
     post:
-      summary: Create a new review
+      summary: Create a new review (authenticated)
       tags:
         - Reviews
+      security:
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -179,6 +151,8 @@ paths:
       responses:
         '201':
           description: Review created
+        '401':
+          description: Unauthorized
 
   /api/reviews/{id}:
     get:
@@ -197,9 +171,11 @@ paths:
         '404':
           description: Review not found
     put:
-      summary: Update a review by ID
+      summary: Update a review by ID (authenticated)
       tags:
         - Reviews
+      security:
+        - sessionAuth: []
       parameters:
         - in: path
           name: id
@@ -215,10 +191,14 @@ paths:
       responses:
         '200':
           description: Review updated
+        '401':
+          description: Unauthorized
     delete:
-      summary: Delete a review by ID
+      summary: Delete a review by ID (authenticated)
       tags:
         - Reviews
+      security:
+        - sessionAuth: []
       parameters:
         - in: path
           name: id
@@ -228,6 +208,8 @@ paths:
       responses:
         '200':
           description: Review deleted
+        '401':
+          description: Unauthorized
 
 components:
   schemas:
@@ -256,12 +238,9 @@ components:
           type: string
         email:
           type: string
-        password:
-          type: string
       required:
         - username
         - email
-        - password
 
     Review:
       type: object
@@ -282,3 +261,9 @@ components:
         - user
         - cake
         - rating
+
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
