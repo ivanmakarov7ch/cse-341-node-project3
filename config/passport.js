@@ -1,3 +1,10 @@
+// config/passport.js
+const GitHubStrategy = require('passport-github2').Strategy;
+const passport = require('passport');
+const User = require('../models/user');
+
+module.exports = function(passport) {
+  // GitHub OAuth Strategy
 passport.use(
   new GitHubStrategy(
     {
@@ -37,3 +44,19 @@ passport.use(
     }
   )
 );
+
+  // Serialize user to session
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  // Deserialize user from session
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id); // <- correct for latest Mongoose
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
+  });
+};
