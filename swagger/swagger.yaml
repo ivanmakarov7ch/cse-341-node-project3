@@ -1,269 +1,112 @@
 openapi: 3.0.0
 info:
   title: Cake Ordering API
-  version: 1.1.0
-  description: |
-    # 🍰 Cake Ordering API
-    This API allows you to manage **Users**, **Cakes**, and **Reviews**.
-    - Users can log in via GitHub OAuth and update their info.
-    - Cakes can be created, updated, deleted, and listed by authenticated users.
-    - Reviews can be created for cakes by authenticated users.
+  version: 1.0.0
 servers:
   - url: https://cse-341-node-project3.onrender.com
   - url: http://localhost:3000
-
-paths:
-  # ===== Cakes =====
-  /api/cakes:
-    get:
-      summary: Get all cakes
-      tags:
-        - Cakes
-      responses:
-        '200':
-          description: List of cakes
-    post:
-      summary: Create a new cake (authenticated)
-      tags:
-        - Cakes
-      security:
-        - sessionAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cake'
-      responses:
-        '201':
-          description: Cake created
-        '401':
-          description: Unauthorized
-
-  /api/cakes/{id}:
-    get:
-      summary: Get a single cake by ID
-      tags:
-        - Cakes
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Cake found
-        '404':
-          description: Cake not found
-    put:
-      summary: Update a cake by ID (authenticated)
-      tags:
-        - Cakes
-      security:
-        - sessionAuth: []
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Cake'
-      responses:
-        '200':
-          description: Cake updated
-        '401':
-          description: Unauthorized
-    delete:
-      summary: Delete a cake by ID (authenticated)
-      tags:
-        - Cakes
-      security:
-        - sessionAuth: []
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Cake deleted
-        '401':
-          description: Unauthorized
-
-  # ===== Users =====
-  /auth/github:
-    get:
-      summary: Login via GitHub OAuth
-      tags:
-        - Users
-      responses:
-        '302':
-          description: Redirects to GitHub for authentication
-
-  /auth/logout:
-    get:
-      summary: Logout user
-      tags:
-        - Users
-      responses:
-        '200':
-          description: User logged out
-
-  /auth/me:
-    get:
-      summary: Get current authenticated user info
-      tags:
-        - Users
-      responses:
-        '200':
-          description: Returns the logged-in user
-        '401':
-          description: Not logged in
-
-  # ===== Reviews =====
-  /api/reviews:
-    get:
-      summary: Get all reviews
-      tags:
-        - Reviews
-      responses:
-        '200':
-          description: List of reviews
-    post:
-      summary: Create a new review (authenticated)
-      tags:
-        - Reviews
-      security:
-        - sessionAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Review'
-      responses:
-        '201':
-          description: Review created
-        '401':
-          description: Unauthorized
-
-  /api/reviews/{id}:
-    get:
-      summary: Get a single review by ID
-      tags:
-        - Reviews
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Review found
-        '404':
-          description: Review not found
-    put:
-      summary: Update a review by ID (authenticated)
-      tags:
-        - Reviews
-      security:
-        - sessionAuth: []
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Review'
-      responses:
-        '200':
-          description: Review updated
-        '401':
-          description: Unauthorized
-    delete:
-      summary: Delete a review by ID (authenticated)
-      tags:
-        - Reviews
-      security:
-        - sessionAuth: []
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Review deleted
-        '401':
-          description: Unauthorized
-
 components:
-  schemas:
-    Cake:
-      type: object
-      properties:
-        name:
-          type: string
-        flavor:
-          type: string
-        description:
-          type: string
-        price:
-          type: number
-        available:
-          type: boolean
-      required:
-        - name
-        - flavor
-        - price
-
-    User:
-      type: object
-      properties:
-        username:
-          type: string
-        email:
-          type: string
-      required:
-        - username
-        - email
-
-    Review:
-      type: object
-      properties:
-        user:
-          type: string
-          description: Mongo ID of user
-        cake:
-          type: string
-          description: Mongo ID of cake
-        rating:
-          type: integer
-          minimum: 1
-          maximum: 5
-        comment:
-          type: string
-      required:
-        - user
-        - cake
-        - rating
-
   securitySchemes:
     sessionAuth:
       type: apiKey
       in: cookie
       name: connect.sid
+  schemas:
+    Cake:
+      type: object
+      properties:
+        name: { type: string }
+        flavor: { type: string }
+        description: { type: string }
+        price: { type: number }
+        available: { type: boolean }
+      required: [name, flavor, price]
+    User:
+      type: object
+      properties:
+        username: { type: string }
+        email: { type: string }
+    Review:
+      type: object
+      properties:
+        cake: { type: string }
+        rating: { type: integer }
+        comment: { type: string }
+      required: [cake, rating]
+    Order:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              cake: { type: string }
+              quantity: { type: integer }
+        totalPrice: { type: number }
+      required: [items, totalPrice]
+paths:
+  /auth/github:
+    get:
+      summary: Login with GitHub (redirect)
+      responses:
+        '302': { description: Redirect to GitHub }
+  /auth/logout:
+    get:
+      summary: Logout
+      responses:
+        '200': { description: Logged out }
+  /auth/me:
+    get:
+      summary: Get current user
+      responses:
+        '200': { description: Current user returned }
+        '401': { description: Not logged in }
+  /api/cakes:
+    get:
+      summary: Get all cakes
+      responses:
+        '200': { description: list }
+    post:
+      summary: Create cake (authenticated)
+      security: [ { sessionAuth: [] } ]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Cake' }
+      responses:
+        '201': { description: Created }
+        '401': { description: Unauthorized }
+  /api/cakes/{id}:
+    get:
+      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      responses: { '200': { description: OK }, '404': { description: Not found } }
+    put:
+      security: [ { sessionAuth: [] } ]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Cake' }
+      responses: { '200': { description: Updated }, '401': { description: Unauthorized } }
+    delete:
+      security: [ { sessionAuth: [] } ]
+      responses: { '200': { description: Deleted }, '401': { description: Unauthorized } }
+  /api/reviews:
+    get:
+      responses: { '200': { description: list } }
+    post:
+      security: [ { sessionAuth: [] } ]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Review' }
+      responses: { '201': { description: Created }, '401': { description: Unauthorized } }
+  /api/orders:
+    get: { responses: { '200': { description: list } } }
+    post:
+      security: [ { sessionAuth: [] } ]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Order' }
+      responses: { '201': { description: Created }, '401': { description: Unauthorized } }

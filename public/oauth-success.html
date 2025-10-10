@@ -1,17 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>OAuth Success</title>
-</head>
-<body>
-  <h1>Login Successful!</h1>
-  <p>Your token:</p>
-  <pre id="token"></pre>
-
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    document.getElementById('token').textContent = token;
-  </script>
-</body>
+  <head><meta charset="utf-8"><title>OAuth Success</title></head>
+  <body>
+    <h1>Login Successful</h1>
+    <p>Redirecting to home...</p>
+    <script>
+      // Optionally you could fetch /auth/me and show tokenless info via session
+      setTimeout(()=> location.href='/', 800);
+    </script>
+  </body>
 </html>

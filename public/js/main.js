@@ -3,21 +3,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   await updateAuthUI();
 });
 
-// Load cakes from API
 async function loadCakes() {
   const container = document.getElementById('cakes-container');
   try {
     const res = await fetch('/api/cakes');
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    if (!res.ok) throw new Error(res.statusText);
     const cakes = await res.json();
-
-    container.innerHTML = cakes.map(cake => `
+    container.innerHTML = cakes.map(c => `
       <div class="cake-card">
-        <h2>${cake.name}</h2>
-        <p>${cake.description || 'No description'}</p>
-        <p>Flavor: ${cake.flavor}</p>
-        <p>Price: $${cake.price.toFixed(2)}</p>
-        <p>Available: ${cake.available ? '✅' : '❌'}</p>
+        <h2>${escapeHtml(c.name)}</h2>
+        <p>${escapeHtml(c.description || '')}</p>
+        <p>Flavor: ${escapeHtml(c.flavor)}</p>
+        <p>Price: $${(c.price||0).toFixed(2)}</p>
+        <p>${c.available ? '✅ Available' : '❌ Unavailable'}</p>
       </div>
     `).join('');
   } catch (err) {
@@ -25,33 +23,25 @@ async function loadCakes() {
   }
 }
 
-// Update the login/logout UI
 async function updateAuthUI() {
-  const authSection = document.getElementById('auth-section');
+  const el = document.getElementById('auth-section');
   try {
     const res = await fetch('/auth/me');
     if (res.ok) {
       const user = await res.json();
-      authSection.innerHTML = `
-        Hello, ${user.username} | <button id="logout-btn">Logout</button>
-      `;
-
+      el.innerHTML = `Hello, ${escapeHtml(user.username)} | <button id="logout-btn">Logout</button>`;
       document.getElementById('logout-btn').addEventListener('click', async () => {
-        const logoutRes = await fetch('/auth/logout');
-        if (logoutRes.ok) {
-          await updateAuthUI(); // refresh UI after logout
-        } else {
-          alert('Logout failed');
-        }
+        await fetch('/auth/logout');
+        updateAuthUI();
       });
     } else {
-      authSection.innerHTML = `
-        <a href="/auth/github" class="github-login-btn">Login with GitHub</a>
-      `;
+      el.innerHTML = `<a class="github-login-btn" href="/auth/github">Login with GitHub</a>`;
     }
-  } catch (error) {
-    authSection.innerHTML = `
-      <a href="/auth/github" class="github-login-btn">Login with GitHub</a>
-    `;
+  } catch (err) {
+    el.innerHTML = `<a class="github-login-btn" href="/auth/github">Login with GitHub</a>`;
   }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }

@@ -2,20 +2,23 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const path = require('path');
 
-// Initialize app FIRST
 const app = express();
 
-// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Session setup
+// Serve public files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Session (store sessions in Mongo)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'supersecret',
@@ -25,13 +28,11 @@ app.use(
   })
 );
 
-// Passport
+// Passport (GitHub OAuth)
 app.use(passport.initialize());
 app.use(passport.session());
-require('./config/passport')(passport);
+require('./config/passport')(); // initialize config
 
-// Serve static files (for oauth-success.html)
-app.use(express.static('public'));
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -50,13 +51,23 @@ app.use('/api/reviews', reviewRoutes);
 const swaggerDocument = YAML.load('./swagger/swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// MongoDB
+// Health root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Connect to MongoDB and start
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(process.env.PORT || 3000, () =>
-      console.log(`Server running on port ${process.env.PORT || 3000}`)
-    );
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server running on ${process.env.PORT || 3000}`);
+    });
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error('Mongo connection error', err);
+    process.exit(1);
+  });
+
+module.exports = app; // for tests

@@ -2,32 +2,33 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-// GitHub login
+// start login
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-// GitHub callback
+// callback
 router.get(
   '/github/callback',
-  passport.authenticate('github', { failureRedirect: '/login-failure' }),
+  passport.authenticate('github', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('/'); // redirect to frontend home page
+    // redirect to frontend success page or homepage
+    res.redirect('/oauth-success.html');
   }
 );
 
-// Logout
-router.get('/logout', (req, res) => {
-  req.logout(() => {
+// logout
+router.get('/logout', (req, res, next) => {
+  req.logout(err => {
+    if (err) return next(err);
     res.redirect('/');
   });
 });
 
-// Get current user
+// current user
 router.get('/me', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({ id: req.user._id, username: req.user.username });
-  } else {
-    res.status(401).json({ message: 'Not logged in' });
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.json({ _id: req.user._id, username: req.user.username, email: req.user.email });
   }
+  res.status(401).json({ message: 'Not logged in' });
 });
 
 module.exports = router;
