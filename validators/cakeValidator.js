@@ -1,16 +1,22 @@
 const { body, validationResult } = require('express-validator');
 
-exports.cakeValidationRules = [
-  body('name').notEmpty().withMessage('Cake name is required'),
+// ✅ Validation rules must be a FUNCTION returning an array
+const cakeValidationRules = () => [
+  body('name').notEmpty().withMessage('Name is required'),
   body('flavor').notEmpty().withMessage('Flavor is required'),
-  body('price').isFloat({ gt: 0 }).withMessage('Price must be a positive number'),
-  body('available').isBoolean().withMessage('Available must be true or false')
+  body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
 ];
 
-exports.validate = (req, res, next) => {
+// ✅ Validate middleware
+const validate = (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+  if (errors.isEmpty()) {
+    return next();
   }
-  next();
+  res.status(400).json({ errors: errors.array() });
+};
+
+module.exports = {
+  cakeValidationRules,
+  validate,
 };
