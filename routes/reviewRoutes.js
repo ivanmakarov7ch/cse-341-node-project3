@@ -3,6 +3,28 @@ const router = express.Router(); // Must declare this first
 const reviewController = require('../controllers/reviewController');
 const { body, validationResult } = require('express-validator');
 const passport = require('passport'); // to secure routes
+const {
+  getReviews,
+  getReviewById,
+  createReview,
+  updateReview,
+  deleteReview
+} = require('../controllers/reviewController');
+
+const { reviewValidationRules, validate } = require('../validators/reviewValidator');
+
+
+/**
+ * @swagger
+ * /api/reviews:
+ *   get:
+ *     summary: Get all reviews
+ */
+router.get('/', getReviews);
+router.get('/:id', getReviewById);
+router.post('/', reviewValidationRules, validate, createReview);
+router.put('/:id', reviewValidationRules, validate, updateReview);
+router.delete('/:id', deleteReview);
 
 // Get all reviews
 router.get('/', reviewController.getReviews);
@@ -43,3 +65,6 @@ router.delete(
 );
 
 module.exports = router;
+
+
+

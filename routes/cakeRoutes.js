@@ -1,6 +1,9 @@
 const express = require('express');
 const Cake = require('../models/cake');
 const router = express.Router();
+const { cakeValidationRules, validate } = require('../validators/cakeValidator');
+const { ensureAuth } = require('../middleware/authMiddleware');
+
 
 // Middleware to check if user is logged in
 function ensureAuth(req, res, next) {
@@ -43,3 +46,19 @@ router.delete('/:id', ensureAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+// POST
+router.post('/', ensureAuth, cakeValidationRules, validate, async (req, res) => {
+  const cake = new Cake(req.body);
+  await cake.save();
+  res.status(201).json(cake);
+});
+
+// PUT
+router.put('/:id', ensureAuth, cakeValidationRules, validate, async (req, res) => {
+  const cake = await Cake.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!cake) return res.status(404).json({ message: 'Cake not found' });
+  res.json(cake);
+});
