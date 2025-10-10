@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -41,5 +41,9 @@
   "devDependencies": {
     "jest": "^30.2.0",
     "supertest": "^7.1.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageProvider": "v8"
   }
 }
