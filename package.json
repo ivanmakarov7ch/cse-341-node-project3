@@ -37,5 +37,9 @@
     "passport-jwt": "^4.0.1",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
   }
 }
