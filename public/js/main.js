@@ -30,8 +30,10 @@ async function updateAuthUI() {
     if (res.ok) {
       const user = await res.json();
       el.innerHTML = `
-        <img class="profile-pic" src="${escapeHtml(user.avatar)}" alt="Avatar">
-        <span>${escapeHtml(user.username)}</span>
+        // <p>Hello, ${data.user.displayName} (@${data.user.username})</p>
+        // <img src="${data.user.avatarUrl}" alt="avatar" />
+        <img class="profile-pic" src="${escapeHtml(user.avatarUrl)}" alt="Avatar">
+        <span>${escapeHtml(user.displayName)}</span>
         <button id="logout-btn">Logout</button>
       `;
       document.getElementById('logout-btn').addEventListener('click', async () => {
