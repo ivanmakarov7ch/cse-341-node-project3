@@ -29,7 +29,11 @@ async function updateAuthUI() {
     const res = await fetch('/auth/me');
     if (res.ok) {
       const user = await res.json();
-      el.innerHTML = `Hello, ${escapeHtml(user.username)} | <button id="logout-btn">Logout</button>`;
+      el.innerHTML = `
+        <img class="profile-pic" src="${escapeHtml(user.avatar || 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png')}" alt="Avatar">
+        <span>${escapeHtml(user.username)}</span>
+        <button id="logout-btn">Logout</button>
+      `;
       document.getElementById('logout-btn').addEventListener('click', async () => {
         await fetch('/auth/logout');
         updateAuthUI();

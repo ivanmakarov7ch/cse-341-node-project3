@@ -82,11 +82,13 @@ footer {
   box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 }
 
+/* Auth Section */
 #auth-section {
   margin-left: 1em;
   font-weight: bold;
   color: white;
 }
+
 #auth-section a {
   color: white;
   text-decoration: underline;
@@ -105,4 +107,35 @@ footer {
 
 .github-login-btn:hover {
   background-color: #444c56;
+}
+
+/* Profile picture in header */
+#auth-section img.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 6px;
+  border: 2px solid white;
+}
+
+#auth-section span {
+  margin-right: 8px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+#auth-section button#logout-btn {
+  background-color: #ff5a5f;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 6px;
+}
+
+#auth-section button#logout-btn:hover {
+  background-color: #e0484f;
 }
