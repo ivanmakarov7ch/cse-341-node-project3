@@ -30,7 +30,7 @@ async function updateAuthUI() {
     if (res.ok) {
       const user = await res.json();
       el.innerHTML = `
-        <img class="profile-pic" src="${escapeHtml(user.avatar || 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png')}" alt="Avatar">
+        <img class="profile-pic" src="${escapeHtml(user.avatar)}" alt="Avatar">
         <span>${escapeHtml(user.username)}</span>
         <button id="logout-btn">Logout</button>
       `;
