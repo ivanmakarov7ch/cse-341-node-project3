@@ -3,15 +3,9 @@ info:
   title: Cake Store API
   description: API for managing cakes, orders, reviews, and users (Final Project Part 3)
   version: "1.0.0"
-host: cse-341-node-project3.onrender.com
-basePath: /
-schemes:
-  - https
-consumes:
-  - application/json
-produces:
-  - application/json
 
+servers: - url: https://cse-341-node-project3.onrender.com
+         - url: http://localhost:3000
 tags:
   - name: Cakes
     description: Cake management
@@ -21,37 +15,8 @@ tags:
     description: Cake reviews
   - name: Users
     description: Registered users
-  - name: Auth
-    description: GitHub OAuth2 authentication
 
 paths:
-
-  /auth/github:
-    get:
-      tags: [Auth]
-      summary: Redirect user to GitHub for login
-      responses:
-        302:
-          description: Redirect to GitHub login
-
-  /auth/github/callback:
-    get:
-      tags: [Auth]
-      summary: GitHub OAuth2 callback
-      responses:
-        200:
-          description: Successfully authenticated user
-        400:
-          description: Authentication failed
-
-  /auth/logout:
-    get:
-      tags: [Auth]
-      summary: Log out current user
-      responses:
-        200:
-          description: User logged out successfully
-
   # --- Cakes ---
   /api/cakes:
     get:
@@ -475,12 +440,3 @@ definitions:
       role:
         type: string
         enum: [user, admin]
-
-securityDefinitions:
-  oauth2:
-    type: oauth2
-    flow: implicit
-    authorizationUrl: https://github.com/login/oauth/authorize
-    scopes:
-      read: Grants read access
-      write: Grants write access
