@@ -12,3 +12,5 @@ exports.getUserById = async (req, res) => {
     res.json(user);
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser, deleteUser };
