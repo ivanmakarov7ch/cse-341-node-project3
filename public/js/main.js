@@ -29,13 +29,16 @@ async function updateAuthUI() {
     const res = await fetch('/auth/me');
     if (res.ok) {
       const user = await res.json();
+      // Use displayName if exists, otherwise username
+      const nameToShow = user.displayName || user.username || 'User';
+      const avatarUrl = user.avatar || 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
+
       el.innerHTML = `
-        // <p>Hello, ${data.user.displayName} (@${data.user.username})</p>
-        // <img src="${data.user.avatarUrl}" alt="avatar" />
-        <img class="profile-pic" src="${escapeHtml(user.avatarUrl)}" alt="Avatar">
-        <span>${escapeHtml(user.displayName)}</span>
+        <img class="profile-pic" src="${escapeHtml(avatarUrl)}" alt="Avatar">
+        <span>${escapeHtml(nameToShow)}</span>
         <button id="logout-btn">Logout</button>
       `;
+
       document.getElementById('logout-btn').addEventListener('click', async () => {
         await fetch('/auth/logout');
         updateAuthUI();
